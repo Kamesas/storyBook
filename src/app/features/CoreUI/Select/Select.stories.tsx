@@ -10,6 +10,6 @@ export default {
 
 const items: Array<string> = ['Label', 'Dublicate', ' Delete'];
 
-export const normal = () => <Select title='Selct title' items={items} />;
-export const multiselect = () => <Select title='Selct title' items={items} multiSelect />;
-export const disabled = () => <Select title='Selct title' disabled />;
+export const normal = () => <Select placeholder='Selct title' items={items} />;
+export const multiselect = () => <Select placeholder='Selct title' items={items} multiSelect />;
+export const disabled = () => <Select placeholder='Selct title' disabled />;

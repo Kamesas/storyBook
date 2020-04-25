@@ -6,14 +6,14 @@ import CheckboxIcon from '../Icons/CheckboxIcon';
 import styles from './Select.module.scss';
 
 interface SelectProps {
-  title: string;
+  placeholder: string;
   items?: Array<string>;
   multiSelect?: boolean;
   disabled?: boolean;
 }
 // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/listbox_role
 
-const Select: React.FC<SelectProps> = ({ title, items, multiSelect = false, disabled = false }) => {
+const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false, disabled = false }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState < Array < string >>([]);
 
@@ -55,7 +55,7 @@ const Select: React.FC<SelectProps> = ({ title, items, multiSelect = false, disa
     return (
       <div className={styles.Select}>
         <div className={classesHeader}>
-          {title}
+          {placeholder}
           <DropDownIcon />
         </div>
       </div>
@@ -71,7 +71,7 @@ const Select: React.FC<SelectProps> = ({ title, items, multiSelect = false, disa
         onClick={() => setIsOpen(!isOpen)}
         className={classesHeader}
       >
-        {title}
+        {Array.isArray(selectedItems) && selectedItems.length > 0 ? selectedItems.join(', ') : placeholder}
         <DropDownIcon />
       </div>
 
@@ -87,7 +87,6 @@ const Select: React.FC<SelectProps> = ({ title, items, multiSelect = false, disa
                 key={item}
                 role='option'
                 aria-selected='true'
-                type='button'
                 onClick={() => onClickHandler(item)}
               >
                 {multiSelect && (isItemSelected(item) ? <CheckboxIcon isActive /> : <CheckboxIcon />)}
