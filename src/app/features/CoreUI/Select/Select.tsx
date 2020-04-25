@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 
 import DropDownIcon from '../Icons/DropDownIcon';
@@ -16,6 +16,18 @@ interface SelectProps {
 const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false, disabled = false }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState < Array < string >>([]);
+
+  const closeSelectHandlerWhenOnBlur = (event: MouseEvent) => {
+    if (!(event.target as HTMLDivElement).dataset.select) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', closeSelectHandlerWhenOnBlur);
+    return () => document.removeEventListener('click', closeSelectHandlerWhenOnBlur);
+  }, []);
+
 
   const onClickHandler = (item: string) => {
     if (!selectedItems.some((current) => current === item)) {
@@ -63,13 +75,14 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
   }
 
   return (
-    <div className={styles.Select} role='listbox'>
+    <div className={styles.Select}>
       <div
         tabIndex={0}
         role='button'
         onKeyPress={() => setIsOpen(!isOpen)}
         onClick={() => setIsOpen(!isOpen)}
         className={classesHeader}
+        data-select
       >
         {Array.isArray(selectedItems) && selectedItems.length > 0 ? selectedItems.join(', ') : placeholder}
         <DropDownIcon />
@@ -88,6 +101,7 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
                 role='option'
                 aria-selected='true'
                 onClick={() => onClickHandler(item)}
+                data-select
               >
                 {multiSelect && (isItemSelected(item) ? <CheckboxIcon isActive /> : <CheckboxIcon />)}
                 {item}
