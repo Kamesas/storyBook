@@ -1,14 +1,15 @@
-@import '../variables';
+@import "../variables";
 
 .checkboxLabel {
-  &:hover, &:focus  {
+  &:hover,
+  &:focus {
     color: $gray-600;
     cursor: pointer;
   }
 }
 
 .svgHover {
-  &:hover  {
+  &:hover {
     path {
       fill: $gray-900;
     }

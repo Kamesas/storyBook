@@ -31,7 +31,7 @@ const Checkbox: FC<CheckboxProps> = (props) => {
 
   useEffect(() => {
     if (!pressedKey) return;
-    setChecked(!isChecked);
+    setChecked((previous) => !previous);
   }, [pressedKey]);
 
   const toggle = useCallback(() => {
