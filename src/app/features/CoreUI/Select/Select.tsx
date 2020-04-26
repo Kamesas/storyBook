@@ -12,11 +12,17 @@ interface SelectProps {
   items?: Array<string>;
   multiSelect?: boolean;
   disabled?: boolean;
+  limitShowItems?: number;
 }
 // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/listbox_role
 
 
-const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false, disabled = false }) => {
+const Select: React.FC<SelectProps> = ({
+  placeholder,
+  items, multiSelect = false,
+  limitShowItems,
+  disabled = false,
+}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState < Array < string >>([]);
 
@@ -133,6 +139,13 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
     );
   }
 
+  const showItesmStyles = {
+    height: `${limitShowItems
+      ? `${limitShowItems * 40 + 18}px` : '100%'}`,
+    overflow: `${limitShowItems
+      ? 'scroll' : 'inherit'}`,
+  };
+
   return (
     <div className={styles.Select} ref={selectReference}>
       <div
@@ -150,6 +163,7 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
         <div
           className={styles.SelectHeaderList}
           role='listbox'
+          style={showItesmStyles}
         >
           {Array.isArray(items) && items.map((item, i) => {
             const activeItem = !multiSelect && selectedItems[0] === item
