@@ -18,6 +18,9 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState < Array < string >>([]);
 
+  /**
+  * close current component when click was on outer component
+  */
   const closeSelectHandlerWhenOnBlur = (event: MouseEvent) => {
     if (!(event.target as HTMLDivElement).dataset.select) {
       setIsOpen(false);
@@ -29,14 +32,16 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
     return () => document.removeEventListener('click', closeSelectHandlerWhenOnBlur);
   }, []);
 
-  // keys
-
-  const [t, setT] = useState<number | null>(null);
+  /**
+  * controls from keyboard
+  */
+  const [customTabIndex, setCustomTabIndex] = useState<number | null>(null);
   const optionReference = useRef<HTMLButtonElement>(null);
   const ArrowDown = useKeyPress('ArrowDown');
   const ArrowUp = useKeyPress('ArrowUp');
   const Escape = useKeyPress('Escape');
   const Tab = useKeyPress('Tab');
+
   useEffect(() => {
     if (Escape) {
       setIsOpen(false);
@@ -44,14 +49,14 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
     }
 
     if (Tab) {
-      setT(null);
+      setCustomTabIndex(null);
       return;
     }
 
     if (!Array.isArray(items)) return;
 
     if (ArrowDown) {
-      setT((previous) => {
+      setCustomTabIndex((previous) => {
         let copyS = previous;
         if (copyS === null) {
           copyS = 0;
@@ -67,7 +72,7 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
     }
 
     if (ArrowUp) {
-      setT((previous) => (previous ? previous - 1 : 0));
+      setCustomTabIndex((previous) => (previous ? previous - 1 : 0));
     }
   }, [ArrowDown, ArrowUp, Escape, Tab]);
 
@@ -75,10 +80,11 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
     if (optionReference && optionReference.current) {
       optionReference.current.focus();
     }
-  }, [t]);
+  }, [customTabIndex]);
 
-  // keys
-
+  /**
+  * calculation the selected items
+  */
   const onClickHandler = (item: string) => {
     if (!selectedItems.some((current) => current === item)) {
       if (!multiSelect) {
@@ -102,6 +108,9 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
     return false;
   };
 
+  /**
+  * Adding dynamic classes
+  */
   const classesHeader = classNames(
     styles.SelectHeader,
     { [styles.SelectHeaderActive]: isOpen },
@@ -146,7 +155,7 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
 
             return (
               <button
-                ref={t === i ? optionReference : null}
+                ref={customTabIndex === i ? optionReference : null}
                 className={`${classesListItem} ${activeItem}`}
                 key={item}
                 role='option'
