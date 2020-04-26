@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { KeyboardEvent, useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 
 import DropDownIcon from '../Icons/DropDownIcon';
@@ -76,6 +76,12 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
     }
   }, [customTabIndex]);
 
+  const selectKeyPressHandler = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      setIsOpen(!isOpen);
+    }
+  };
+
   /**
   * calculation the selected items
   */
@@ -132,17 +138,19 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
       <div
         tabIndex={0}
         role='button'
-        onKeyPress={() => setIsOpen(!isOpen)}
+        onKeyPress={(event: KeyboardEvent<HTMLDivElement>) => selectKeyPressHandler(event)}
         onClick={() => setIsOpen(!isOpen)}
         className={classesHeader}
-
       >
         {Array.isArray(selectedItems) && selectedItems.length > 0 ? selectedItems.join(', ') : placeholder}
         <DropDownIcon />
       </div>
 
       {isOpen && (
-        <div className={styles.SelectHeaderList}>
+        <div
+          className={styles.SelectHeaderList}
+          role='listbox'
+        >
           {Array.isArray(items) && items.map((item, i) => {
             const activeItem = !multiSelect && selectedItems[0] === item
               ? styles.SelectHeaderListItemDefaultSelected : '';
