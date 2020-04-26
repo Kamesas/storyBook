@@ -5,6 +5,7 @@ import DropDownIcon from '../Icons/DropDownIcon';
 import CheckboxIcon from '../Icons/CheckboxIcon';
 import styles from './Select.module.scss';
 import useKeyPress from '../../../../utils/hooks/useKeyPress';
+import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 
 interface SelectProps {
   placeholder: string;
@@ -14,6 +15,7 @@ interface SelectProps {
 }
 // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/listbox_role
 
+
 const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false, disabled = false }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState < Array < string >>([]);
@@ -21,16 +23,8 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
   /**
   * close current component when click was on outer component
   */
-  const closeSelectHandlerWhenOnBlur = (event: MouseEvent) => {
-    if (!(event.target as HTMLDivElement).dataset.select) {
-      setIsOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('click', closeSelectHandlerWhenOnBlur);
-    return () => document.removeEventListener('click', closeSelectHandlerWhenOnBlur);
-  }, []);
+  const selectReference = useRef<HTMLDivElement>(null);
+  useOnClickOutside(selectReference, () => setIsOpen(false));
 
   /**
   * controls from keyboard
@@ -43,19 +37,19 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
   const Tab = useKeyPress('Tab');
 
   useEffect(() => {
-    if (Escape) {
-      setIsOpen(false);
-      return;
-    }
-
     if (Tab) {
       setCustomTabIndex(null);
       return;
     }
 
-    if (!Array.isArray(items)) return;
+    if (!Array.isArray(items) || !isOpen) return;
 
-    if (ArrowDown && isOpen) {
+    if (Escape) {
+      setIsOpen(false);
+      return;
+    }
+
+    if (ArrowDown) {
       setCustomTabIndex((previous) => {
         let copyS = previous;
         if (copyS === null) {
@@ -71,7 +65,7 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
       });
     }
 
-    if (ArrowUp && isOpen) {
+    if (ArrowUp) {
       setCustomTabIndex((previous) => (previous ? previous - 1 : 0));
     }
   }, [ArrowDown, ArrowUp, Escape, Tab]);
@@ -134,22 +128,21 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
   }
 
   return (
-    <div className={styles.Select} data-select>
+    <div className={styles.Select} ref={selectReference}>
       <div
         tabIndex={0}
         role='button'
         onKeyPress={() => setIsOpen(!isOpen)}
         onClick={() => setIsOpen(!isOpen)}
         className={classesHeader}
-        data-select
+
       >
         {Array.isArray(selectedItems) && selectedItems.length > 0 ? selectedItems.join(', ') : placeholder}
         <DropDownIcon />
-        {customTabIndex}
       </div>
 
       {isOpen && (
-        <div className={styles.SelectHeaderList} data-select>
+        <div className={styles.SelectHeaderList}>
           {Array.isArray(items) && items.map((item, i) => {
             const activeItem = !multiSelect && selectedItems[0] === item
               ? styles.SelectHeaderListItemDefaultSelected : '';
@@ -164,7 +157,6 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
                 onClick={() => onClickHandler(item)}
                 tabIndex={-1}
                 data-index={i}
-                data-select
               >
                 {multiSelect && (isItemSelected(item) ? <CheckboxIcon isActive /> : <CheckboxIcon />)}
                 {item}

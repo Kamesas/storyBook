@@ -1,9 +1,6 @@
 @import "../variables.scss";
 
 .Select {
-  height: 40px;
-  background: $gray-100;
-  border-radius: 4px;
   user-select: none;
 
   &Disabled {
@@ -21,9 +18,11 @@
   }
 
   &Header {
+    height: 40px;
     display: flex;
     align-items: center;
-    height: 100%;
+    background: $gray-100;
+    border-radius: 4px;
     justify-content: space-between;
     font-weight: 500;
     font-size: 14px;
