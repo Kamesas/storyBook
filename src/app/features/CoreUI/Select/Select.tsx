@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 
 import DropDownIcon from '../Icons/DropDownIcon';
 import CheckboxIcon from '../Icons/CheckboxIcon';
 import styles from './Select.module.scss';
+import useKeyPress from '../../../../utils/hooks/useKeyPress';
 
 interface SelectProps {
   placeholder: string;
@@ -28,6 +29,55 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
     return () => document.removeEventListener('click', closeSelectHandlerWhenOnBlur);
   }, []);
 
+  // keys
+
+  const [t, setT] = useState<number | null>(null);
+  const optionReference = useRef<HTMLButtonElement>(null);
+  const ArrowDown = useKeyPress('ArrowDown');
+  const ArrowUp = useKeyPress('ArrowUp');
+  const Escape = useKeyPress('Escape');
+  const Tab = useKeyPress('Tab');
+  useEffect(() => {
+    if (Escape) {
+      setIsOpen(false);
+      return;
+    }
+
+    if (Tab) {
+      setT(null);
+      return;
+    }
+
+    if (!Array.isArray(items)) return;
+
+    if (ArrowDown) {
+      setT((previous) => {
+        let copyS = previous;
+        if (copyS === null) {
+          copyS = 0;
+          return copyS;
+        }
+        if (copyS >= 0 && copyS < items.length - 1) {
+          copyS += 1;
+          return copyS;
+        }
+
+        return previous;
+      });
+    }
+
+    if (ArrowUp) {
+      setT((previous) => (previous ? previous - 1 : 0));
+    }
+  }, [ArrowDown, ArrowUp, Escape, Tab]);
+
+  useEffect(() => {
+    if (optionReference && optionReference.current) {
+      optionReference.current.focus();
+    }
+  }, [t]);
+
+  // keys
 
   const onClickHandler = (item: string) => {
     if (!selectedItems.some((current) => current === item)) {
@@ -75,7 +125,7 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
   }
 
   return (
-    <div className={styles.Select}>
+    <div className={styles.Select} data-select>
       <div
         tabIndex={0}
         role='button'
@@ -89,18 +139,21 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
       </div>
 
       {isOpen && (
-        <div className={styles.SelectHeaderList}>
-          {Array.isArray(items) && items.map((item) => {
+        <div className={styles.SelectHeaderList} data-select>
+          {Array.isArray(items) && items.map((item, i) => {
             const activeItem = !multiSelect && selectedItems[0] === item
               ? styles.SelectHeaderListItemDefaultSelected : '';
 
             return (
               <button
+                ref={t === i ? optionReference : null}
                 className={`${classesListItem} ${activeItem}`}
                 key={item}
                 role='option'
                 aria-selected='true'
                 onClick={() => onClickHandler(item)}
+                tabIndex={-1}
+                data-index={i}
                 data-select
               >
                 {multiSelect && (isItemSelected(item) ? <CheckboxIcon isActive /> : <CheckboxIcon />)}
