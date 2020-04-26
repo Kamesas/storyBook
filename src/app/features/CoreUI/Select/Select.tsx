@@ -55,7 +55,7 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
 
     if (!Array.isArray(items)) return;
 
-    if (ArrowDown) {
+    if (ArrowDown && isOpen) {
       setCustomTabIndex((previous) => {
         let copyS = previous;
         if (copyS === null) {
@@ -71,7 +71,7 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
       });
     }
 
-    if (ArrowUp) {
+    if (ArrowUp && isOpen) {
       setCustomTabIndex((previous) => (previous ? previous - 1 : 0));
     }
   }, [ArrowDown, ArrowUp, Escape, Tab]);
@@ -145,6 +145,7 @@ const Select: React.FC<SelectProps> = ({ placeholder, items, multiSelect = false
       >
         {Array.isArray(selectedItems) && selectedItems.length > 0 ? selectedItems.join(', ') : placeholder}
         <DropDownIcon />
+        {customTabIndex}
       </div>
 
       {isOpen && (
