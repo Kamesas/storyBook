@@ -8,6 +8,9 @@ import TwoColumnGrid from '../TwoColumnGrid/TwoColumnGrid';
 import Label from '../Label/Label';
 import Button from '../Button/Button';
 import Toggle from '../Toggle/Toggle';
+import Select from '../Select/Select';
+
+const items: Array<string> = ['Label', 'Dublicate', ' Delete', 'Item-4', 'Item-5', 'Item-6'];
 
 export default { title: 'Form' };
 
@@ -20,6 +23,7 @@ interface FormData {
   marketing2: boolean;
   weeklytips: boolean;
   newfeatures: boolean;
+  marketingRole: Array<string>;
 }
 
 interface Props {
@@ -74,6 +78,9 @@ const Form: FC<Props> = ({ onSubmit }) => {
           defaultValue
           ref={register({})}
         />
+
+        <Select placeholder='Selct placeholder' items={items} />
+
         <Button size='big' type='submit'>Submit</Button>
       </TwoColumnGrid>
     </form>

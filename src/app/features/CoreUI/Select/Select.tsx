@@ -13,6 +13,7 @@ interface SelectProps {
   multiSelect?: boolean;
   disabled?: boolean;
   limitShowItems?: number;
+  labelTitle?: string;
 }
 // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/listbox_role
 
@@ -74,7 +75,7 @@ const Select: React.FC<SelectProps> = ({
     if (ArrowUp) {
       setCustomTabIndex((previous) => (previous ? previous - 1 : 0));
     }
-  }, [ArrowDown, ArrowUp, Escape, Tab]);
+  }, [ArrowDown, ArrowUp, Escape, Tab, items, isOpen]);
 
   useEffect(() => {
     if (optionReference && optionReference.current) {
@@ -95,6 +96,7 @@ const Select: React.FC<SelectProps> = ({
     if (!selectedItems.some((current) => current === item)) {
       if (!multiSelect) {
         setSelectedItems([item]);
+        setIsOpen(false);
       } else if (multiSelect) {
         setSelectedItems([...selectedItems, item]);
       }
@@ -124,9 +126,11 @@ const Select: React.FC<SelectProps> = ({
   );
 
   const classesListItem = classNames(
-    styles.SelectHeaderListItem,
-    { [styles.SelectHeaderListItemDefault]: !multiSelect },
+    styles.SelectListItem,
+    { [styles.SelectListItemDefault]: !multiSelect },
   );
+
+  const showItesmStyles = limitShowItems ? { height: `${limitShowItems * 40 + 20}px`, overflow: 'scroll' } : {};
 
   if (disabled) {
     return (
@@ -138,13 +142,6 @@ const Select: React.FC<SelectProps> = ({
       </div>
     );
   }
-
-  const showItesmStyles = {
-    height: `${limitShowItems
-      ? `${limitShowItems * 40 + 18}px` : '100%'}`,
-    overflow: `${limitShowItems
-      ? 'scroll' : 'inherit'}`,
-  };
 
   return (
     <div className={styles.Select} ref={selectReference}>
@@ -160,32 +157,32 @@ const Select: React.FC<SelectProps> = ({
       </div>
 
       {isOpen && (
-        <div
-          className={styles.SelectHeaderList}
-          role='listbox'
-          style={showItesmStyles}
-        >
-          {Array.isArray(items) && items.map((item, i) => {
-            const activeItem = !multiSelect && selectedItems[0] === item
-              ? styles.SelectHeaderListItemDefaultSelected : '';
+      <div
+        className={styles.SelectList}
+        role='listbox'
+        style={showItesmStyles}
+      >
+        {Array.isArray(items) && items.map((item, i) => {
+          const activeItem = !multiSelect && selectedItems[0] === item
+            ? styles.SelectListItemDefaultSelected : '';
 
-            return (
-              <button
-                ref={customTabIndex === i ? optionReference : null}
-                className={`${classesListItem} ${activeItem}`}
-                key={item}
-                role='option'
-                aria-selected='true'
-                onClick={() => onClickHandler(item)}
-                tabIndex={-1}
-                data-index={i}
-              >
-                {multiSelect && (isItemSelected(item) ? <CheckboxIcon isActive /> : <CheckboxIcon />)}
-                {item}
-              </button>
-            );
-          })}
-        </div>
+          return (
+            <button
+              ref={customTabIndex === i ? optionReference : null}
+              className={`${classesListItem} ${activeItem}`}
+              key={item}
+              role='option'
+              aria-selected='true'
+              onClick={() => onClickHandler(item)}
+              tabIndex={-1}
+              data-index={i}
+            >
+              {multiSelect && (isItemSelected(item) ? <CheckboxIcon isActive /> : <CheckboxIcon />)}
+              {item}
+            </button>
+          );
+        })}
+      </div>
       )}
     </div>
 

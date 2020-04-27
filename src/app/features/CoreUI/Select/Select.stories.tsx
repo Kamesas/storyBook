@@ -12,8 +12,8 @@ const items: Array<string> = ['Label', 'Dublicate', ' Delete', 'Item-4', 'Item-5
 
 export const normal = () => <Select placeholder='Selct title' items={items} />;
 export const multiSelect = () => <Select placeholder='Selct title' items={items} multiSelect />;
-export const normalWithLImitItems = () => <Select placeholder='Selct title' items={items} limitShowItems={3} />;
-export const multiSelectWithLimititems = () => (
+export const normalWithLimitItems = () => <Select placeholder='Selct title' items={items} limitShowItems={3} />;
+export const multiSelectWithLimitItems = () => (
   <Select
     placeholder='Selct title'
     items={items}
