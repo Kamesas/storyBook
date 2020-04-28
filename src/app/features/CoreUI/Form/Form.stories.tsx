@@ -25,6 +25,7 @@ interface FormData {
   weeklytips: boolean;
   newfeatures: boolean;
   marketingRole: Array<string>;
+  marketingRoleMulti: Array<string>;
   customerAccepts: boolean;
 }
 
@@ -83,20 +84,24 @@ const Form: FC<Props> = ({ onSubmit }) => {
           defaultValue
           ref={register({})}
         />
-      </TwoColumnGrid>
 
-      <div style={{ width: '200px', marginLeft: '12px' }}>
         <Select
           placeholder='Marketing role'
-          multiSelect
           items={items}
           size={3}
           name='marketingRole'
           ref={register({})}
         />
-      </div>
 
-      <TwoColumnGrid>
+        <Select
+          placeholder='Marketing role multi'
+          multiSelect
+          items={items}
+          size={3}
+          name='marketingRoleMulti'
+          ref={register({})}
+        />
+
         <Checkbox
           label='Customer Accepts Marketing'
           name='customerAccepts'
