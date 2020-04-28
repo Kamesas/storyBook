@@ -9,6 +9,7 @@ import Label from '../Label/Label';
 import Button from '../Button/Button';
 import Toggle from '../Toggle/Toggle';
 import Select from '../Select/Select';
+import Checkbox from '../Chekbox/Checkbox';
 
 const items: Array<string> = ['Label', 'Dublicate', ' Delete', 'Item-4', 'Item-5', 'Item-6'];
 
@@ -24,6 +25,7 @@ interface FormData {
   weeklytips: boolean;
   newfeatures: boolean;
   marketingRole: Array<string>;
+  customerAccepts: boolean;
 }
 
 interface Props {
@@ -41,14 +43,16 @@ const Form: FC<Props> = ({ onSubmit }) => {
           fillWidth
           label='Firstname *'
           name='firstname'
-          ref={register({ required: true })}
+          ref={register({ })}
+          // ref={register({ required: true })}
           error={errors.firstname && 'First name is required.'}
         />
         <FormInput
           fillWidth
           label='Lastname *'
           name='lastname'
-          ref={register({ required: true })}
+          ref={register({ })}
+          // ref={register({ required: true })}
           error={errors.lastname && 'Last name is required.'}
         />
         <Label title='Marketing 2'>
@@ -69,7 +73,8 @@ const Form: FC<Props> = ({ onSubmit }) => {
           label='E-Mail *'
           name='email'
           type='email'
-          ref={register({ required: true })}
+          // ref={register({ required: true })}
+          ref={register({ })}
           error={errors.email && 'E-Mail is required.'}
         />
         <Toggle
@@ -78,9 +83,25 @@ const Form: FC<Props> = ({ onSubmit }) => {
           defaultValue
           ref={register({})}
         />
+      </TwoColumnGrid>
 
-        <Select placeholder='Selct placeholder' items={items} />
+      <div style={{ width: '200px', marginLeft: '12px' }}>
+        <Select
+          placeholder='Marketing role'
+          multiSelect
+          items={items}
+          size={3}
+          name='marketingRole'
+          ref={register({})}
+        />
+      </div>
 
+      <TwoColumnGrid>
+        <Checkbox
+          label='Customer Accepts Marketing'
+          name='customerAccepts'
+          ref={register({})}
+        />
         <Button size='big' type='submit'>Submit</Button>
       </TwoColumnGrid>
     </form>

@@ -1,9 +1,9 @@
-import React, { KeyboardEvent, useState, useEffect, useRef } from 'react';
+import React, { KeyboardEvent, useState, useEffect, useRef, Ref, forwardRef } from 'react';
 import classNames from 'classnames';
 
+import styles from './Select.module.scss';
 import DropDownIcon from '../Icons/DropDownIcon';
 import CheckboxIcon from '../Icons/CheckboxIcon';
-import styles from './Select.module.scss';
 import useKeyPress from '../../../../utils/hooks/useKeyPress';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 
@@ -12,18 +12,19 @@ interface SelectProps {
   items?: Array<string>;
   multiSelect?: boolean;
   disabled?: boolean;
-  limitShowItems?: number;
+  size?: number;
   labelTitle?: string;
+  name?: string;
+  ref?: Ref<HTMLSelectElement>;
 }
-// https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/listbox_role
 
-
-const Select: React.FC<SelectProps> = ({
+const Select: React.FC<SelectProps> = forwardRef(({
   placeholder,
   items, multiSelect = false,
-  limitShowItems,
+  size,
   disabled = false,
-}) => {
+  name,
+}, ref) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState < Array < string >>([]);
 
@@ -92,7 +93,9 @@ const Select: React.FC<SelectProps> = ({
   /**
   * calculation the selected items
   */
-  const onClickHandler = (item: string) => {
+  const onSelectOptionItem = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, item: string) => {
+    event.preventDefault();
+
     if (!selectedItems.some((current) => current === item)) {
       if (!multiSelect) {
         setSelectedItems([item]);
@@ -130,7 +133,7 @@ const Select: React.FC<SelectProps> = ({
     { [styles.SelectListItemDefault]: !multiSelect },
   );
 
-  const showItesmStyles = limitShowItems ? { height: `${limitShowItems * 40 + 20}px`, overflow: 'scroll' } : {};
+  const showItesmStyles = size ? { height: `${size * 40 + 20}px`, overflow: 'scroll' } : {};
 
   if (disabled) {
     return (
@@ -144,49 +147,55 @@ const Select: React.FC<SelectProps> = ({
   }
 
   return (
-    <div className={styles.Select} ref={selectReference}>
-      <div
-        tabIndex={0}
-        role='button'
-        onKeyPress={(event: KeyboardEvent<HTMLDivElement>) => selectKeyPressHandler(event)}
-        onClick={() => setIsOpen(!isOpen)}
-        className={classesHeader}
-      >
-        {Array.isArray(selectedItems) && selectedItems.length > 0 ? selectedItems.join(', ') : placeholder}
-        <DropDownIcon />
+    <>
+      <div className={styles.Select} ref={selectReference}>
+        <div
+          tabIndex={0}
+          role='button'
+          onKeyPress={(event: KeyboardEvent<HTMLDivElement>) => selectKeyPressHandler(event)}
+          onClick={() => setIsOpen(!isOpen)}
+          className={classesHeader}
+        >
+          {Array.isArray(selectedItems) && selectedItems.length > 0 ? selectedItems.join(', ') : placeholder}
+          <DropDownIcon />
+        </div>
+
+        {isOpen && (
+        <div
+          className={styles.SelectList}
+          role='listbox'
+          style={showItesmStyles}
+        >
+          {Array.isArray(items) && items.map((item, i) => {
+            const activeItem = !multiSelect && selectedItems[0] === item
+              ? styles.SelectListItemDefaultSelected : '';
+
+            return (
+              <button
+                ref={customTabIndex === i ? optionReference : null}
+                className={`${classesListItem} ${activeItem}`}
+                key={item}
+                role='option'
+                aria-selected='true'
+                onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onSelectOptionItem(event, item)}
+                tabIndex={-1}
+                data-index={i}
+              >
+                {multiSelect && (isItemSelected(item) ? <CheckboxIcon isActive /> : <CheckboxIcon />)}
+                {item}
+              </button>
+            );
+          })}
+        </div>
+        )}
       </div>
 
-      {isOpen && (
-      <div
-        className={styles.SelectList}
-        role='listbox'
-        style={showItesmStyles}
-      >
-        {Array.isArray(items) && items.map((item, i) => {
-          const activeItem = !multiSelect && selectedItems[0] === item
-            ? styles.SelectListItemDefaultSelected : '';
-
-          return (
-            <button
-              ref={customTabIndex === i ? optionReference : null}
-              className={`${classesListItem} ${activeItem}`}
-              key={item}
-              role='option'
-              aria-selected='true'
-              onClick={() => onClickHandler(item)}
-              tabIndex={-1}
-              data-index={i}
-            >
-              {multiSelect && (isItemSelected(item) ? <CheckboxIcon isActive /> : <CheckboxIcon />)}
-              {item}
-            </button>
-          );
-        })}
-      </div>
-      )}
-    </div>
+      <select className={styles.SelectOrigin} name={name} ref={ref}>
+        <option value={selectedItems}>{selectedItems.join(',')}</option>
+      </select>
+    </>
 
   );
-};
+});
 
 export default Select;

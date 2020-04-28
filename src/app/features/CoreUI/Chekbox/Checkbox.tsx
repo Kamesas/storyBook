@@ -1,4 +1,4 @@
-import React, { FC, useState, useCallback, useRef, useEffect } from 'react';
+import React, { Ref, FC, useState, useCallback, useRef, useEffect, forwardRef } from 'react';
 import classNames from 'classnames';
 
 import styles from './Checkbox.module.scss';
@@ -13,10 +13,12 @@ interface CheckboxProps {
   defaultValue?: boolean;
   disabled?: boolean;
   onChange?: (newChecked: boolean) => void;
+  name?: string;
+  ref?: Ref<HTMLInputElement>;
 }
 
-const Checkbox: FC<CheckboxProps> = (props) => {
-  const { label, defaultValue, disabled, onChange, ...otherProps } = props;
+const Checkbox: FC<CheckboxProps> = forwardRef((props, ref) => {
+  const { label, defaultValue, disabled, onChange, name, ...otherProps } = props;
   const labelReference = useRef(null);
   // const hover = useHover(labelReference);
   const focus = useFocus(labelReference);
@@ -56,6 +58,8 @@ const Checkbox: FC<CheckboxProps> = (props) => {
       {isChecked ? <CheckboxIcon isActive /> : <CheckboxIcon />}
 
       <input
+        name={name}
+        ref={ref}
         type='checkbox'
         className={styles.input}
         checked={isChecked}
@@ -65,6 +69,6 @@ const Checkbox: FC<CheckboxProps> = (props) => {
       />
     </Label>
   );
-};
+});
 
 export default Checkbox;
