@@ -123,21 +123,21 @@ const Select: React.FC<SelectProps> = forwardRef(({
   * Adding dynamic classes
   */
   const classesHeader = classNames(
-    styles.SelectHeader,
-    { [styles.SelectHeaderActive]: isOpen },
-    { [styles.SelectDisabled]: disabled },
+    styles.selectHeader,
+    { [styles.selectHeaderActive]: isOpen },
+    { [styles.selectDisabled]: disabled },
   );
 
   const classesListItem = classNames(
-    styles.SelectListItem,
-    { [styles.SelectListItemDefault]: !multiSelect },
+    styles.selectListItem,
+    { [styles.selectListItemDefault]: !multiSelect },
   );
 
   const showItesmStyles = size ? { height: `${size * 40 + 20}px`, overflow: 'scroll' } : {};
 
   if (disabled) {
     return (
-      <div className={styles.Select}>
+      <div className={styles.select}>
         <div className={classesHeader}>
           {placeholder}
           <DropDownIcon />
@@ -148,7 +148,7 @@ const Select: React.FC<SelectProps> = forwardRef(({
 
   return (
     <>
-      <div className={styles.Select} ref={selectReference}>
+      <div className={styles.select} ref={selectReference}>
         <div
           tabIndex={0}
           role='button'
@@ -162,13 +162,13 @@ const Select: React.FC<SelectProps> = forwardRef(({
 
         {isOpen && (
         <div
-          className={styles.SelectList}
+          className={styles.selectList}
           role='listbox'
           style={showItesmStyles}
         >
           {Array.isArray(items) && items.map((item, i) => {
             const activeItem = !multiSelect && selectedItems[0] === item
-              ? styles.SelectListItemDefaultSelected : '';
+              ? styles.selectListItemDefaultSelected : '';
 
             return (
               <button
@@ -190,7 +190,7 @@ const Select: React.FC<SelectProps> = forwardRef(({
         )}
       </div>
 
-      <select className={styles.SelectOrigin} name={name} ref={ref}>
+      <select className={styles.selectOrigin} name={name} ref={ref}>
         <option value={selectedItems}>{selectedItems.join(',')}</option>
       </select>
     </>

@@ -6,6 +6,6 @@ interface CenterWrapProps {
   children: React.ReactNode;
 }
 
-const CenterWrap: React.FC<CenterWrapProps> = ({ children }) => <div className={styles.CenterWrap}>{children}</div>;
+const CenterWrap: React.FC<CenterWrapProps> = ({ children }) => <div className={styles.centerWrap}>{children}</div>;
 
 export default CenterWrap;

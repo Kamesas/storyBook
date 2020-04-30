@@ -1,21 +1,34 @@
 @import "../variables";
 
 .checkboxLabel {
+  color: $gray-700;
+
+  svg {
+    fill: $gray-300;
+  }
+
   &:hover,
   &:focus {
-    color: $gray-600;
     cursor: pointer;
-  }
-}
 
-.svgHover {
-  &:hover {
-    path {
-      fill: $gray-900;
+    svg path {
+      fill: $gray-600;
     }
   }
 }
 
 .input {
   display: none;
+
+  &:checked + {
+    svg path {
+      fill: $blue-600;
+    }
+  }
+
+  &:disabled + {
+    svg path {
+      fill: $gray-300;
+    }
+  }
 }

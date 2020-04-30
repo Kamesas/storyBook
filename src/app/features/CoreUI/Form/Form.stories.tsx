@@ -9,7 +9,7 @@ import Label from '../Label/Label';
 import Button from '../Button/Button';
 import Toggle from '../Toggle/Toggle';
 import Select from '../Select/Select';
-import Checkbox from '../Chekbox/Checkbox';
+import Checkbox from '../Chekbox2/Checkbox';
 
 const items: Array<string> = ['Label', 'Dublicate', ' Delete', 'Item-4', 'Item-5', 'Item-6'];
 

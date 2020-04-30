@@ -1,34 +1,21 @@
-import React, { Ref, FC, useState, useCallback, useEffect, forwardRef } from 'react';
-import classNames from 'classnames';
+import React, { Ref, FC, useState, useCallback, forwardRef } from 'react';
 
 import styles from './Checkbox.module.scss';
-import Label from '../Label/Label';
 import CheckboxIcon from '../Icons/CheckboxIcon';
-import useKeyPress from '../../../../utils/hooks/useKeyPress';
 
 interface CheckboxProps {
   label?: string;
   defaultValue?: boolean;
   disabled?: boolean;
+  name: string;
   onChange?: (newChecked: boolean) => void;
-  name?: string;
   ref?: Ref<HTMLInputElement>;
 }
 
 const Checkbox: FC<CheckboxProps> = forwardRef((props, ref) => {
-  const { label, defaultValue, disabled, onChange, name, ...otherProps } = props;
-  const pressedKey = useKeyPress(' '); // key space ' '
+  const { label, defaultValue, disabled, onChange, name } = props;
 
   const [isChecked, setChecked] = useState(!!defaultValue);
-
-  const classes = classNames(
-    { [styles.checkboxLabel]: !disabled },
-  );
-
-  useEffect(() => {
-    if (!pressedKey) return;
-    setChecked((previous) => !previous);
-  }, [pressedKey]);
 
   const toggle = useCallback(() => {
     const newValue = !isChecked;
@@ -39,28 +26,36 @@ const Checkbox: FC<CheckboxProps> = forwardRef((props, ref) => {
     }
   }, [isChecked, onChange]);
 
+  const onKeyHandler = (event: React.KeyboardEvent) => {
+    if (event.charCode !== 32) return;
+    toggle();
+  };
+
   return (
-    <Label
-      title={label || ''}
-      className={classes}
-      disabled={disabled}
+    <div
       tabIndex={0}
-      position='right'
+      onKeyPress={(event: React.KeyboardEvent) => onKeyHandler(event)}
+      role='checkbox'
+      aria-checked
     >
       <input
-        name={name}
         ref={ref}
         type='checkbox'
+        name={name}
         className={styles.input}
         checked={isChecked}
         disabled={disabled}
         onChange={toggle}
-        {...otherProps}
+        id='customCheckbox'
       />
-
-      {isChecked && !disabled ? <CheckboxIcon isActive /> : <CheckboxIcon />}
-
-    </Label>
+      <label
+        htmlFor='customCheckbox'
+        className={styles.checkboxLabel}
+      >
+        {isChecked && !disabled ? <CheckboxIcon isActive /> : <CheckboxIcon />}
+        {label}
+      </label>
+    </div>
   );
 });
 
