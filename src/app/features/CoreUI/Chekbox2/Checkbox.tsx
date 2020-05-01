@@ -7,7 +7,7 @@ interface CheckboxProps {
   label?: string;
   defaultValue?: boolean;
   disabled?: boolean;
-  name: string;
+  name?: string;
   onChange?: (newChecked: boolean) => void;
   ref?: Ref<HTMLInputElement>;
 }
@@ -33,7 +33,7 @@ const Checkbox: FC<CheckboxProps> = forwardRef((props, ref) => {
 
   return (
     <div
-      tabIndex={0}
+      tabIndex={disabled ? -1 : 0}
       onKeyPress={(event: React.KeyboardEvent) => onKeyHandler(event)}
       role='checkbox'
       aria-checked

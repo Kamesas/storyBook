@@ -1,15 +1,27 @@
+@import "../variables";
+
 .ddMenu {
   position: relative;
   display: flex;
   align-items: center;
 
   &Icon {
+    display: flex;
+    align-items: center;
     cursor: pointer;
     padding: 8px;
+
+    svg path {
+      fill: $gray-900;
+    }
+
+    &Close {
+      display: none;
+    }
   }
 
   &List {
-    background-color: palegreen;
+    background-color: $gray-900;
     position: absolute;
     z-index: -1;
     top: 0;
@@ -28,10 +40,13 @@
       list-style-type: none;
       padding: 8px;
       transition: color 0.35s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: $white;
 
       &:hover {
         cursor: pointer;
-        color: #000;
+        color: $gray-400;
       }
     }
   }
@@ -39,8 +54,24 @@
   &Checkbox {
     display: none;
 
-    &:checked ~ .ddMenuList {
-      transform: translateY(0);
+    &:checked ~ {
+      .ddMenuList {
+        transform: translateY(0);
+      }
+
+      .ddMenuIcon {
+        .ddMenuIconBurger {
+          display: none;
+        }
+
+        .ddMenuIconClose {
+          display: block;
+        }
+
+        svg path {
+          fill: $white;
+        }
+      }
     }
   }
 }
