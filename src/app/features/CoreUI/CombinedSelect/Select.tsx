@@ -3,12 +3,14 @@ import classNames from 'classnames';
 
 import styles from './Select.module.scss';
 import DropDownIcon from '../Icons/DropDownIcon';
+import CheckboxIcon from '../Icons/CheckboxIcon';
 import useKeyPress from '../../../../utils/hooks/useKeyPress';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 
 interface SelectProps {
   placeholder: string;
   items?: Array<string>;
+  multiSelect?: boolean;
   disabled?: boolean;
   size?: number;
   labelTitle?: string;
@@ -18,13 +20,13 @@ interface SelectProps {
 
 const Select: React.FC<SelectProps> = forwardRef(({
   placeholder,
-  items,
+  items, multiSelect = false,
   size,
   disabled = false,
   name,
 }, ref) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selectedItem, setSelectedItem] = useState < string >('');
+  const [selectedItems, setSelectedItems] = useState < Array < string >>([]);
 
   /**
   * close current component when click was on outer component
@@ -93,8 +95,28 @@ const Select: React.FC<SelectProps> = forwardRef(({
   */
   const onSelectOptionItem = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, item: string) => {
     event.preventDefault();
-    setSelectedItem(item);
-    setIsOpen(false);
+
+    if (!selectedItems.some((current) => current === item)) {
+      if (!multiSelect) {
+        setSelectedItems([item]);
+        setIsOpen(false);
+      } else if (multiSelect) {
+        setSelectedItems([...selectedItems, item]);
+      }
+    } else {
+      let filterDeletedItem = selectedItems;
+      filterDeletedItem = filterDeletedItem.filter(
+        (current) => current !== item,
+      );
+      setSelectedItems([...filterDeletedItem]);
+    }
+  };
+
+  const isItemSelected = (item: string) => {
+    if (selectedItems.some((current) => current === item)) {
+      return true;
+    }
+    return false;
   };
 
   /**
@@ -104,6 +126,11 @@ const Select: React.FC<SelectProps> = forwardRef(({
     styles.selectHeader,
     { [styles.selectHeaderActive]: isOpen },
     { [styles.selectDisabled]: disabled },
+  );
+
+  const classesListItem = classNames(
+    styles.selectListItem,
+    { [styles.selectListItemDefault]: !multiSelect },
   );
 
   const showItesmStyles = size ? { height: `${size * 40 + 20}px`, overflow: 'scroll' } : {};
@@ -129,7 +156,7 @@ const Select: React.FC<SelectProps> = forwardRef(({
           onClick={() => setIsOpen(!isOpen)}
           className={classesHeader}
         >
-          {selectedItem !== '' ? selectedItem : placeholder}
+          {Array.isArray(selectedItems) && selectedItems.length > 0 ? selectedItems.join(', ') : placeholder}
           <DropDownIcon />
         </div>
 
@@ -140,13 +167,13 @@ const Select: React.FC<SelectProps> = forwardRef(({
           style={showItesmStyles}
         >
           {Array.isArray(items) && items.map((item, i) => {
-            const activeItem = selectedItem === item
+            const activeItem = !multiSelect && selectedItems[0] === item
               ? styles.selectListItemDefaultSelected : '';
 
             return (
               <button
                 ref={customTabIndex === i ? optionReference : null}
-                className={`${styles.selectListItem} ${activeItem}`}
+                className={`${classesListItem} ${activeItem}`}
                 key={item}
                 role='option'
                 aria-selected='true'
@@ -154,6 +181,7 @@ const Select: React.FC<SelectProps> = forwardRef(({
                 tabIndex={-1}
                 data-index={i}
               >
+                {multiSelect && (isItemSelected(item) ? <CheckboxIcon isActive /> : <CheckboxIcon />)}
                 {item}
               </button>
             );
@@ -163,7 +191,7 @@ const Select: React.FC<SelectProps> = forwardRef(({
       </div>
 
       <select className={styles.selectOrigin} name={name} ref={ref}>
-        <option value={selectedItem}>{selectedItem}</option>
+        <option value={selectedItems}>{selectedItems.join(',')}</option>
       </select>
     </>
 
